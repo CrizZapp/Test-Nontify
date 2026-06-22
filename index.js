@@ -1,25 +1,24 @@
 import express from "express";
 import webpush from "web-push";
+import path from "path";
 
 const app = express();
-
 app.use(express.json());
 app.use(express.static("public"));
 
-const subscriptions = [];
+let subscriptions = [];
 
-// tus keys
+// VAPID (los tuyos
+const publicKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
 
-const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
-
-const privateVapidKey = "SYpz_R8JpUuB4D5k1Z_m9qzoiReyAaOqbcJuTlAq0g0";
+const privateKey = "SYpz_R8JpUuB4D5k1Z_m9qzoiReyAaOqbcJuTlAq0g0";
 
 webpush.setVapidDetails(
   "mailto:test@test.com",
-  publicVapidKey,
-  privateVapidKey
+  publicKey,
+  privateKey
 );
-                                        
+
 // guardar suscripción
 app.post("/subscribe", (req, res) => {
   subscriptions.push(req.body);
@@ -29,22 +28,17 @@ app.post("/subscribe", (req, res) => {
 // enviar notificación
 app.post("/send", async (req, res) => {
   const payload = JSON.stringify({
-    title: "TEST",
-    body: "Notificación real 🔥"
+    title: "CODEBREAKER",
+    body: req.body?.text || "Mensaje nuevo 🔥"
   });
 
-  try {
-    await Promise.all(
-      subscriptions.map(sub =>
-        webpush.sendNotification(sub, payload)
-      )
-    );
+  await Promise.all(
+    subscriptions.map(sub =>
+      webpush.sendNotification(sub, payload).catch(() => {})
+    )
+  );
 
-    res.json({ ok: true });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ ok: false });
-  }
+  res.json({ ok: true });
 });
 
-app.listen(3000, () => console.log("RUN"));
+app.listen(3000, () => console.log("🔥 server on 3000"));
