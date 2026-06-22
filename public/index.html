@@ -385,12 +385,98 @@ btnClose.onclick = () => {
   popup.style.display = "none";
 };
 
-// --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
+// --- LEER EN TIEMPO REAL ---
+const liveSender = document.getElementById("live-sender");
+const liveEmoji = document.getElementById("live-emoji");
+const liveTime = document.getElementById("live-time");
+const historyBox = document.getElementById("history-box");
 
-// 1. Tu clave pública (Pasaporte)
+// TRUCO: Evitar spam de notificaciones al cargar el historial inicial
+let isInitialLoad = true;
+setTimeout(() => { isInitialLoad = false; }, 3000); 
+
+onChildAdded(query(mensajesRef, limitToLast(50)), (snap) => {
+  const datos = snap.val();
+  
+  // SOLUCIÓN AL BUG DE CELULAR: 
+  // En móviles no podemos usar 'new Notification', usamos el Service Worker.
+  if (!isInitialLoad && datos.remitente !== miUsuario && Notification.permission === "granted") {
+    try {
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.ready.then(reg => {
+          reg.showNotification(`${datos.remitente} 🥀`, {
+            body: "te ha enviado un mensaje",
+            icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+          });
+        });
+      }
+    } catch (err) {
+      console.log("Error al notificar:", err);
+    }
+  }
+
+  const horaStr = new Date(datos.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // 1. Actualizar Pantalla Principal
+  liveSender.innerText = datos.remitente;
+  liveSender.className = `sender-tag sender-${datos.remitente.toLowerCase()}`;
+  liveEmoji.innerText = datos.contenido;
+  liveTime.innerText = horaStr;
+
+  // Definimos el color según quién escribe
+  let colorRemitente = '#00aaff'; // Azul para Sabri por defecto
+  if (datos.remitente === 'Cris') colorRemitente = '#00e676'; // Verde para Cris
+  if (datos.remitente === 'Ana') colorRemitente = '#ff007f';  // Fucsia para Ana
+
+  // 2. Agregar al historial (Sidebar)
+  const item = document.createElement("div");
+  item.className = "history-item";
+  item.innerHTML = `
+    <div class="history-meta">
+      <span style="color: ${colorRemitente}; font-weight:bold;">${datos.remitente}</span>
+      <span>${horaStr}</span>
+    </div>
+    <div style="font-size: 14px;">${datos.contenido}</div>
+  `;
+  historyBox.insertBefore(item, historyBox.firstChild); // Nuevo arriba
+});
+
+// --- LÓGICA DE SIDEBAR ---
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("sidebar-overlay");
+
+const openSidebar = () => { sidebar.classList.add("open"); overlay.style.display = "block"; };
+const closeSidebar = () => { sidebar.classList.remove("open"); overlay.style.display = "none"; };
+
+document.getElementById("btn-open-sidebar").onclick = openSidebar;
+document.getElementById("btn-close-sidebar").onclick = closeSidebar;
+overlay.onclick = closeSidebar;
+
+// --- LÓGICA DEL POPUP DE NOTIFICACIONES ---
+const popup = document.getElementById("notif-popup");
+const btnAllow = document.getElementById("allow-notif");
+const btnClose = document.getElementById("close-popup");
+
+window.addEventListener("load", () => {
+  // SOLUCIÓN POPUP: Si ya tiene permisos O si ya lo cerró antes (guardado en localStorage), no hacer nada.
+  if (Notification.permission === "granted" || localStorage.getItem("notif_popup_seen")) {
+    return;
+  }
+  
+  setTimeout(() => {
+    popup.style.display = "flex";
+  }, 1000);
+});
+
+btnClose.onclick = () => {
+  localStorage.setItem("notif_popup_seen", "true"); // Guardar en memoria que ya lo vio y lo cerró
+  popup.style.display = "none";
+};
+
+
+// --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
 const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
 
-// 2. La función traductora que el navegador necesita
 function urlBase64ToUint8Array(base64) {
   const padding = '='.repeat((4 - base64.length % 4) % 4);
   const base64Safe = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -398,31 +484,25 @@ function urlBase64ToUint8Array(base64) {
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
-// 3. Lo que pasa cuando el usuario hace clic en ACEPTAR
 btnAllow.onclick = async () => {
   popup.style.display = "none";
+  localStorage.setItem("notif_popup_seen", "true"); // Guardar en memoria que ya lo aceptó
 
   try {
-    // Pedir permiso al navegador (el típico cartel de "Permitir notificaciones")
     const perm = await Notification.requestPermission();
     if (perm !== "granted") {
-      console.log("El usuario rechazó las notificaciones.");
+      console.log("Rechazó las notificaciones");
       return;
     }
 
-    // Registrar el trabajador fantasma (Service Worker)
     const reg = await navigator.serviceWorker.register("/sw.js");
-    
-    // Esperar a que el trabajador esté listo
     const readyReg = await navigator.serviceWorker.ready;
 
-    // Suscribir al usuario usando tu clave pública traducida
     const sub = await readyReg.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
     });
 
-    // Enviar los datos de la suscripción a tu backend (servidor)
     await fetch("https://test-nontify.onrender.com/subscribe", { 
       method: "POST",
       body: JSON.stringify(sub),
@@ -430,10 +510,8 @@ btnAllow.onclick = async () => {
     });
 
     alert("LISTO 🔥 Notificaciones activadas.");
-    
   } catch (error) {
-    console.error("Error configurando las notificaciones:", error);
-    alert("Hubo un error 💀 revisa la consola.");
+    console.error("Error:", error);
   }
 };
 
