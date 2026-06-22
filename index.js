@@ -1,42 +1,50 @@
 import express from "express";
-import path from "path";
+import webpush from "web-push";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.static("."));
+app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.resolve("public/index.html"));
+const subscriptions = [];
+
+// tus keys
+
+const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
+
+const privateVapidKey = "SYpz_R8JpUuB4D5k1Z_m9qzoiReyAaOqbcJuTlAq0g0";
+
+webpush.setVapidDetails(
+  "mailto:test@test.com",
+  publicVapidKey,
+  privateVapidKey
+);
+                                        
+// guardar suscripción
+app.post("/subscribe", (req, res) => {
+  subscriptions.push(req.body);
+  res.json({ ok: true });
 });
 
-// botón de prueba
+// enviar notificación
 app.post("/send", async (req, res) => {
+  const payload = JSON.stringify({
+    title: "TEST",
+    body: "Notificación real 🔥"
+  });
+
   try {
-    const payload = {
-      title: "TEST",
-      body: "Notificación de prueba 🔥"
-    };
+    await Promise.all(
+      subscriptions.map(sub =>
+        webpush.sendNotification(sub, payload)
+      )
+    );
 
-    console.log("📩 /send recibido:", req.body);
-
-    // aquí no “magia”, solo respuesta del server
-    res.json({
-      ok: true,
-      message: "Notificación simulada enviada",
-      data: payload
-    });
-
+    res.json({ ok: true });
   } catch (err) {
-    console.error("❌ ERROR /send:", err);
-
-    res.status(500).json({
-      ok: false,
-      error: "falló el endpoint"
-    });
+    console.log(err);
+    res.status(500).json({ ok: false });
   }
 });
 
-app.listen(3000, () => {
-  console.log("🚀 Server running on port 3000");
-});
+app.listen(3000, () => console.log("RUN"));
