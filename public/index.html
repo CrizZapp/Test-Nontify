@@ -241,11 +241,15 @@ document.getElementById("btn-logout").onclick = () => {
 // --- FILTRADO ESTRICTO DE CARACTERES (SOLO EMOJIS) ---
 const inputTexto = document.getElementById("txt");
 
+// Función compleja para detectar emojis (¡AHORA MÁS COMPLEJA Y FUNCIONAL! 😎)
 function containsOnlyEmojis(str) {
-  const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
+  // Añadimos \ufe0f (Selector de color/estilo) y \u200d (Pegamento de emojis)
+  const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\ufe0f|\u200d)/g;
+  
   const cleanStr = str.replace(emojiRegex, '');
-  return cleanStr.length === 0 || cleanStr.trim().length === 0;
+  return cleanStr.length === 0 || cleanStr.trim().length === 0; // Solo emojis o espacios
 }
+
 
 inputTexto.oninput = () => {
   if (!containsOnlyEmojis(inputTexto.value) && inputTexto.value !== "") {
