@@ -6,8 +6,8 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // 🔑 GENERA ESTO UNA VEZ (te explico abajo)
-const publicVapidKey = "PEGA_AQUI_PUBLIC_KEY";
-const privateVapidKey = "PEGA_AQUI_PRIVATE_KEY";
+const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
+const privateVapidKey = "SYpz_R8JpUuB4D5k1Z_m9qzoiReyAaOqbcJuTlAq0g0";
 
 webpush.setVapidDetails(
   "mailto:test@test.com",
