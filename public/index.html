@@ -1,54 +1,443 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Push Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Noze Xd</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  /* --- ESTILOS RETRO TAMAGOTCHI --- */
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  
+  body { 
+    /* Fondo con patrón de plástico o pixeles */
+    background: #000;
+    background-image: linear-gradient(#1a1a1a 1px, transparent 1px), linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+    background-size: 10px 10px;
+    color: #fff;
+    font-family: 'Press Start 2P', cursive; /* Fuente pixelar */
+    height: 100dvh; /* Altura dinámica del viewport para evitar problemas de teclado */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 8px solid #333; /* Marco de la "consola" */
+    border-radius: 20px;
+  }
+
+  /* --- PANTALLA DE LOGIN (Style Retro) --- */
+  #login-screen {
+    position: fixed; inset: 0;
+    background: #111;
+    z-index: 2000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 20px; border-radius: 15px;
+  }
+  .login-box {
+    background: #FF0055; /* Color brillante retro */
+    border: 5px solid #fff;
+    border-radius: 10px;
+    padding: 20px; text-align: center; width: 90%; max-width: 320px;
+  }
+  .login-box h2 { color: #fff; font-size: 14px; margin-bottom: 20px; }
+  .login-box select, .login-box input {
+    width: 100%; padding: 10px; margin-bottom: 10px;
+    background: #fff; border: 3px solid #000; color: #000;
+    font-family: 'Press Start 2P', cursive; font-size: 10px; text-align: center;
+  }
+  .login-box button {
+    width: 100%; padding: 10px; background: #00AAFF; color: #fff;
+    border: 3px solid #fff; cursor: pointer; font-family: Press Start 2P;
+  }
+
+  /* --- HEADER Y MENÚ HAMBURGUESA RETRO --- */
+  header {
+    height: 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: #333; padding: 0 10px; border-radius: 5px; margin-bottom: 5px;
+  }
+  .app-title { font-size: 8px; color: #00E676; }
+  .menu-btn {
+    background: transparent; border: none; color: #fff; font-size: 20px; cursor: pointer;
+  }
+
+  /* --- ÁREA PRINCIPAL DE VISUALIZACIÓN (Tamagotchi Screen) --- */
+  #view-screen {
+    flex: 1; /* Ocupa el espacio disponible */
+    background: #2a3d2a; /* Fondo LCD viejo verde */
+    border: 5px solid #999; /* Marco plateado retro */
+    border-radius: 10px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: relative; overflow: hidden; margin-bottom: 5px;
+    padding: 20px;
+  }
+  
+  /* Efecto de líneas de escaneo LCD retro */
+  #view-screen::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(rgba(0,0,0,0.1) 50%, transparent 50%);
+    background-size: 100% 4px; pointer-events: none;
+  }
+
+  .sender-tag {
+    position: absolute; top: 10px; left: 10px;
+    font-size: 8px; text-transform: uppercase; letter-spacing: 1px;
+    padding: 4px 8px; border-radius: 4px;
+  }
+
+  .sender-ana { background: #5a1c3d; color: #ff007f; }
+  .sender-cris { background: #005c4b; color: #00e676; }
+  .sender-sabri { background: #1c3d5a; color: #00aaff; }
+
+  .emoji-display {
+    font-size: 70px; /* Emojis gigantes */
+    text-align: center;
+    filter: drop-shadow(0 4px 0px rgba(0,0,0,0.5)); /* Sombra pixel */
+    margin: 20px 0;
+  }
+
+  .time-tag { position: absolute; bottom: 10px; right: 10px; font-size: 6px; color: #666; }
+
+  /* --- SIDEBAR RETRO (Historial) --- */
+  #sidebar {
+    position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
+    background: #111; z-index: 1500; transition: left 0.3s ease;
+    border-right: 5px solid #FF0055; padding: 20px; display: flex; flex-direction: column;
+  }
+  #sidebar.open { left: 0; }
+  .sidebar-header {
+    display: flex; justify-content: space-between; align-items: center;
+    color: #FF0055; font-size: 10px; margin-bottom: 20px;
+  }
+  
+  .history-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+  .history-item {
+    background: #333; border: 2px solid #fff; padding: 10px; font-size: 8px; border-radius: 5px;
+  }
+  .history-meta { display: flex; justify-content: space-between; margin-bottom: 5px; }
+
+  #sidebar-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1400; display: none;
+  }
+
+  /* --- FOOTER: ÁREA DE ENVÍO SEPARADA --- */
+  footer {
+    height: 60px;
+    background: #333; border-radius: 10px;
+    display: flex; align-items: center; gap: 10px; padding: 10px;
+  }
+  
+  /* Input normal, permitiendo teclado de celular */
+  #txt {
+    flex: 1; background: #fff; border: 3px solid #000;
+    padding: 10px; color: #000; font-size: 12px; border-radius: 5px;
+    font-family: 'Press Start 2P', cursive;
+    outline: none;
+  }
+  
+  #btn-send {
+    width: 40px; height: 40px; background: #AA00FF; color: #fff;
+    border: 3px solid #fff; border-radius: 5px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  #btn-send:active { transform: translateY(2px); background: #8800CC; }
+
+</style>
 </head>
+<div id="notif-popup" style="
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.8);
+display: none;
+justify-content: center;
+align-items: center;
+z-index: 9999;
+">
+
+  <div style="
+    width: 90%;
+    max-width: 320px;
+    background: #111;
+    border: 3px solid #00ff99;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+    position: relative;
+  ">
+
+    <div id="close-popup" style="
+      position:absolute;
+      top:5px;
+      right:10px;
+      cursor:pointer;
+      color:red;
+    ">✕</div>
+
+    <p style="font-size:10px; margin-bottom:10px;">
+      https://test-nontify.onrender.com/ necesita permisos
+    </p>
+
+    <p style="font-size:8px; color:#aaa; margin-bottom:15px;">
+      ¿Permitir notificaciones?
+    </p>
+
+    <button id="allow-notif" style="
+      width:100%;
+      padding:10px;
+      background:#00ff99;
+      border:none;
+      font-family:inherit;
+      cursor:pointer;
+    ">ACEPTAR</button>
+
+  </div>
+</div>
 <body>
 
-<h2>Push Notifications Test</h2>
+<div id="login-screen">
+  <div class="login-box">
+    <h2>¿Y tu quien coño eres?</h2>
+    <select id="user-select">
+      <option value="Cris">Cris 🥀</option>
+      <option value="Ana">Ana 🌺</option>
+      <option value="Sabri">Sabri 💜</option>
+    </select>
+    <input type="password" id="user-pass" placeholder="PASSWORD" autocomplete="off">
+    <button id="btn-login">LOGIN</button>
+    <p id="login-error" style="color: #FF0; font-size:8px; margin-top: 10px; display: none;"></p>
+  </div>
+</div>
 
-<button id="btn">Activar notificaciones</button>
-<button id="send">Enviar test</button>
+<div id="sidebar-overlay"></div>
 
-<script>
+<div id="sidebar">
+  <div class="sidebar-header">
+    <span>LOG HISTORIAL</span>
+    <button id="btn-close-sidebar" style="background:transparent; border:none; color:#fff; font-size:16px;">✕</button>
+  </div>
+  <div class="history-list" id="history-box">
+    </div>
+</div>
+
+<header>
+  <button class="menu-btn" id="btn-open-sidebar">☰</button>
+  <div class="app-title">CODEBREAKER 8BIT</div>
+  <button id="btn-logout" style="background:transparent; border:none; color:#999; font-size:8px;">Salir</button>
+</header>
+
+<div id="view-screen">
+  <div id="live-sender" class="sender-tag sender-cris">WAITING</div>
+  <div id="live-emoji" class="emoji-display">⏳</div>
+  <div id="live-time" class="time-tag">--:--</div>
+</div>
+
+<footer>
+  <input id="txt" placeholder="..." autocomplete="off">
+  <button id="btn-send">➤</button>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+// Configuración de Firebase (Intacta)
+const firebaseConfig = {
+  apiKey: "AIzaSyABaTv7yjGsgIu2A6mj6arml2IHGljt_H4",
+  authDomain: "ingresa-dfec2.firebaseapp.com",
+  databaseURL: "https://ingresa-dfec2-default-rtdb.firebaseio.com",
+  projectId: "ingresa-dfec2",
+  storageBucket: "ingresa-dfec2.appspot.com",
+  messagingSenderId: "441882283200",
+  appId: "1:441882283200:web:8067df85facc2d67d77125"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const mensajesRef = ref(db, "utu_secret_messages");
+
+// CONTRASEÑA SECRETA (Mantener o cambiar aquí)
+const CLAVE_SECRETA = "SABRINASARDINA123"; 
+
+let miUsuario = localStorage.getItem("utu_chat_user") || "";
+
+// --- MANEJO DE LOGIN ---
+const loginScreen = document.getElementById("login-screen");
+const btnLogin = document.getElementById("btn-login");
+const loginError = document.getElementById("login-error");
+
+if (miUsuario) loginScreen.style.display = "none";
+
+btnLogin.onclick = () => {
+  const user = document.getElementById("user-select").value;
+  const pass = document.getElementById("user-pass").value.trim();
+
+  if (pass === CLAVE_SECRETA) {
+    miUsuario = user;
+    localStorage.setItem("utu_chat_user", user);
+    loginScreen.style.display = "none";
+  } else {
+    loginError.innerText = "WRONG PASSWORD"; loginError.style.display = "block";
+  }
+};
+
+document.getElementById("btn-logout").onclick = () => {
+  if(confirm("LOGOUT?")) { localStorage.removeItem("utu_chat_user"); location.reload(); }
+};
+
+// --- FILTRADO ESTRICTO DE CARACTERES (SOLO EMOJIS) ---
+const inputTexto = document.getElementById("txt");
+
+// Función compleja para detectar emojis
+function containsOnlyEmojis(str) {
+  const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
+  const cleanStr = str.replace(emojiRegex, '');
+  return cleanStr.length === 0 || cleanStr.trim().length === 0; // Solo emojis o espacios
+}
+
+inputTexto.oninput = (e) => {
+  // Solo permitimos el valor si es puramente emojis
+  if (!containsOnlyEmojis(inputTexto.value) && inputTexto.value !== "") {
+    inputTexto.value = ""; // Borramos si escriben texto
+  }
+};
+
+// --- ENVIAR MENSAJE ---
+const enviarMensaje = () => {
+  const msg = inputTexto.value.trim();
+  if (!msg || !miUsuario) return;
+
+  push(mensajesRef, {
+    remitente: miUsuario,
+    contenido: msg,
+    timestamp: Date.now()
+  });
+
+  inputTexto.value = "";
+};
+
+document.getElementById("btn-send").onclick = enviarMensaje;
+inputTexto.onkeypress = (e) => { if (e.key === "Enter") enviarMensaje(); };
+
+// --- LEER EN TIEMPO REAL ---
+const liveSender = document.getElementById("live-sender");
+const liveEmoji = document.getElementById("live-emoji");
+const liveTime = document.getElementById("live-time");
+const historyBox = document.getElementById("history-box");
+
+onChildAdded(query(mensajesRef, limitToLast(50)), (snap) => {
+  const datos = snap.val();
+ if (datos.remitente !== miUsuario && Notification.permission === "granted") {
+  new Notification(`${datos.remitente} 🥀`, {
+    body: "te ha enviado un mensaje",
+    icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
+  });
+}
+  const horaStr = new Date(datos.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // 1. Actualizar Pantalla Principal (overwrite previous)
+  liveSender.innerText = datos.remitente;
+  liveSender.className = `sender-tag sender-${datos.remitente.toLowerCase()}`;
+  liveEmoji.innerText = datos.contenido;
+  liveTime.innerText = horaStr;
+
+  // Definimos el color según quién escribe
+  let colorRemitente = '#00aaff'; // Azul para Sabri por defecto
+  if (datos.remitente === 'Cris') colorRemitente = '#00e676'; // Verde para Cris
+  if (datos.remitente === 'Ana') colorRemitente = '#ff007f';  // Fucsia para Ana
+
+  // 2. Agregar al historial (Sidebar)
+  const item = document.createElement("div");
+  item.className = "history-item";
+  item.innerHTML = `
+    <div class="history-meta">
+      <span style="color: ${colorRemitente}; font-weight:bold;">${datos.remitente}</span>
+      <span>${horaStr}</span>
+    </div>
+    <div style="font-size: 14px;">${datos.contenido}</div>
+  `;
+  historyBox.insertBefore(item, historyBox.firstChild); // Nuevo arriba
+});
+
+// --- LÓGICA DE SIDEBAR ---
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("sidebar-overlay");
+
+const openSidebar = () => { sidebar.classList.add("open"); overlay.style.display = "block"; };
+const closeSidebar = () => { sidebar.classList.remove("open"); overlay.style.display = "none"; };
+
+document.getElementById("btn-open-sidebar").onclick = openSidebar;
+document.getElementById("btn-close-sidebar").onclick = closeSidebar;
+overlay.onclick = closeSidebar;
+
+const popup = document.getElementById("notif-popup");
+const btnAllow = document.getElementById("allow-notif");
+const btnClose = document.getElementById("close-popup");
+
+// mostrar popup automáticamente (o cuando quieras)
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    popup.style.display = "flex";
+  }, 1000);
+});
+
+btnClose.onclick = () => {
+  popup.style.display = "none";
+};
+
+// --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
+
+// 1. Tu clave pública (Pasaporte)
 const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = atob(base64);
-  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+// 2. La función traductora que el navegador necesita
+function urlBase64ToUint8Array(base64) {
+  const padding = '='.repeat((4 - base64.length % 4) % 4);
+  const base64Safe = (base64 + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64Safe);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
-// registrar service worker
-async function registerSW() {
-  const register = await navigator.serviceWorker.register("/sw.js");
+// 3. Lo que pasa cuando el usuario hace clic en ACEPTAR
+btnAllow.onclick = async () => {
+  popup.style.display = "none";
 
-  const subscription = await register.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
-  });
+  try {
+    // Pedir permiso al navegador (el típico cartel de "Permitir notificaciones")
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") {
+      console.log("El usuario rechazó las notificaciones.");
+      return;
+    }
 
-  await fetch("/subscribe", {
-    method: "POST",
-    body: JSON.stringify(subscription),
-    headers: { "Content-Type": "application/json" }
-  });
-}
+    // Registrar el trabajador fantasma (Service Worker)
+    const reg = await navigator.serviceWorker.register("/sw.js");
+    
+    // Esperar a que el trabajador esté listo
+    const readyReg = await navigator.serviceWorker.ready;
 
-document.getElementById("btn").onclick = async () => {
-  await Notification.requestPermission();
-  await registerSW();
-  alert("Listo, suscrito 🔥");
+    // Suscribir al usuario usando tu clave pública traducida
+    const sub = await readyReg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+    });
+
+    // Enviar los datos de la suscripción a tu backend (servidor)
+    await fetch("https://test-nontify.onrender.com/subscribe", { 
+      method: "POST",
+      body: JSON.stringify(sub),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    alert("LISTO 🔥 Notificaciones activadas.");
+    
+  } catch (error) {
+    console.error("Error configurando las notificaciones:", error);
+    alert("Hubo un error 💀 revisa la consola.");
+  }
 };
 
-document.getElementById("send").onclick = async () => {
-  await fetch("/send", { method: "POST" });
-};
+
 </script>
 
 </body>
