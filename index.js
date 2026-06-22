@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(express.static("."));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.resolve("index.html"));
+  res.sendFile(path.resolve("public/index.html"));
 });
 
 app.listen(3000, () => {
