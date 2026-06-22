@@ -10,22 +10,21 @@
   * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
   
   body { 
-    /* Fondo con patrón de plástico o pixeles */
     background: #000;
     background-image: linear-gradient(#1a1a1a 1px, transparent 1px), linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
     background-size: 10px 10px;
     color: #fff;
-    font-family: 'Press Start 2P', cursive; /* Fuente pixelar */
-    height: 100dvh; /* Altura dinámica del viewport para evitar problemas de teclado */
+    font-family: 'Press Start 2P', cursive;
+    height: 100dvh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     padding: 10px;
-    border: 8px solid #333; /* Marco de la "consola" */
+    border: 8px solid #333;
     border-radius: 20px;
   }
 
-  /* --- PANTALLA DE LOGIN (Style Retro) --- */
+  /* --- PANTALLA DE LOGIN --- */
   #login-screen {
     position: fixed; inset: 0;
     background: #111;
@@ -34,7 +33,7 @@
     padding: 20px; border-radius: 15px;
   }
   .login-box {
-    background: #FF0055; /* Color brillante retro */
+    background: #FF0055;
     border: 5px solid #fff;
     border-radius: 10px;
     padding: 20px; text-align: center; width: 90%; max-width: 320px;
@@ -47,10 +46,10 @@
   }
   .login-box button {
     width: 100%; padding: 10px; background: #00AAFF; color: #fff;
-    border: 3px solid #fff; cursor: pointer; font-family: Press Start 2P;
+    border: 3px solid #fff; cursor: pointer; font-family: 'Press Start 2P';
   }
 
-  /* --- HEADER Y MENÚ HAMBURGUESA RETRO --- */
+  /* --- HEADER --- */
   header {
     height: 40px;
     display: flex; align-items: center; justify-content: space-between;
@@ -61,18 +60,17 @@
     background: transparent; border: none; color: #fff; font-size: 20px; cursor: pointer;
   }
 
-  /* --- ÁREA PRINCIPAL DE VISUALIZACIÓN (Tamagotchi Screen) --- */
+  /* --- PANTALLA DE VISUALIZACIÓN --- */
   #view-screen {
-    flex: 1; /* Ocupa el espacio disponible */
-    background: #2a3d2a; /* Fondo LCD viejo verde */
-    border: 5px solid #999; /* Marco plateado retro */
+    flex: 1;
+    background: #2a3d2a;
+    border: 5px solid #999;
     border-radius: 10px;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     position: relative; overflow: hidden; margin-bottom: 5px;
     padding: 20px;
   }
   
-  /* Efecto de líneas de escaneo LCD retro */
   #view-screen::after {
     content: ""; position: absolute; inset: 0;
     background: linear-gradient(rgba(0,0,0,0.1) 50%, transparent 50%);
@@ -90,15 +88,15 @@
   .sender-sabri { background: #1c3d5a; color: #00aaff; }
 
   .emoji-display {
-    font-size: 70px; /* Emojis gigantes */
+    font-size: 70px;
     text-align: center;
-    filter: drop-shadow(0 4px 0px rgba(0,0,0,0.5)); /* Sombra pixel */
+    filter: drop-shadow(0 4px 0px rgba(0,0,0,0.5));
     margin: 20px 0;
   }
 
   .time-tag { position: absolute; bottom: 10px; right: 10px; font-size: 6px; color: #666; }
 
-  /* --- SIDEBAR RETRO (Historial) --- */
+  /* --- SIDEBAR --- */
   #sidebar {
     position: fixed; top: 0; left: -100%; width: 280px; height: 100%;
     background: #111; z-index: 1500; transition: left 0.3s ease;
@@ -120,14 +118,13 @@
     position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1400; display: none;
   }
 
-  /* --- FOOTER: ÁREA DE ENVÍO SEPARADA --- */
+  /* --- FOOTER --- */
   footer {
     height: 60px;
     background: #333; border-radius: 10px;
     display: flex; align-items: center; gap: 10px; padding: 10px;
   }
   
-  /* Input normal, permitiendo teclado de celular */
   #txt {
     flex: 1; background: #fff; border: 3px solid #000;
     padding: 10px; color: #000; font-size: 12px; border-radius: 5px;
@@ -141,59 +138,18 @@
     display: flex; align-items: center; justify-content: center; font-size: 16px;
   }
   #btn-send:active { transform: translateY(2px); background: #8800CC; }
-
 </style>
 </head>
-<div id="notif-popup" style="
-position: fixed;
-inset: 0;
-background: rgba(0,0,0,0.8);
-display: none;
-justify-content: center;
-align-items: center;
-z-index: 9999;
-">
+<body>
 
-  <div style="
-    width: 90%;
-    max-width: 320px;
-    background: #111;
-    border: 3px solid #00ff99;
-    border-radius: 10px;
-    padding: 15px;
-    font-family: 'Press Start 2P', cursive;
-    color: white;
-    position: relative;
-  ">
-
-    <div id="close-popup" style="
-      position:absolute;
-      top:5px;
-      right:10px;
-      cursor:pointer;
-      color:red;
-    ">✕</div>
-
-    <p style="font-size:10px; margin-bottom:10px;">
-      https://test-nontify.onrender.com/ necesita permisos
-    </p>
-
-    <p style="font-size:8px; color:#aaa; margin-bottom:15px;">
-      ¿Permitir notificaciones?
-    </p>
-
-    <button id="allow-notif" style="
-      width:100%;
-      padding:10px;
-      background:#00ff99;
-      border:none;
-      font-family:inherit;
-      cursor:pointer;
-    ">ACEPTAR</button>
-
+<div id="notif-popup" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 9999;">
+  <div style="width: 90%; max-width: 320px; background: #111; border: 3px solid #00ff99; border-radius: 10px; padding: 15px; font-family: 'Press Start 2P', cursive; color: white; position: relative;">
+    <div id="close-popup" style="position:absolute; top:5px; right:10px; cursor:pointer; color:red;">✕</div>
+    <p style="font-size:10px; margin-bottom:10px;">https://test-nontify.onrender.com/ necesita permisos</p>
+    <p style="font-size:8px; color:#aaa; margin-bottom:15px;">¿Permitir notificaciones?</p>
+    <button id="allow-notif" style="width:100%; padding:10px; background:#00ff99; border:none; font-family:inherit; cursor:pointer;">ACEPTAR</button>
   </div>
 </div>
-<body>
 
 <div id="login-screen">
   <div class="login-box">
@@ -216,8 +172,7 @@ z-index: 9999;
     <span>LOG HISTORIAL</span>
     <button id="btn-close-sidebar" style="background:transparent; border:none; color:#fff; font-size:16px;">✕</button>
   </div>
-  <div class="history-list" id="history-box">
-    </div>
+  <div class="history-list" id="history-box"></div>
 </div>
 
 <header>
@@ -241,7 +196,6 @@ z-index: 9999;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// Configuración de Firebase (Intacta)
 const firebaseConfig = {
   apiKey: "AIzaSyABaTv7yjGsgIu2A6mj6arml2IHGljt_H4",
   authDomain: "ingresa-dfec2.firebaseapp.com",
@@ -256,9 +210,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const mensajesRef = ref(db, "utu_secret_messages");
 
-// CONTRASEÑA SECRETA (Mantener o cambiar aquí)
 const CLAVE_SECRETA = "SABRINASARDINA123"; 
-
 let miUsuario = localStorage.getItem("utu_chat_user") || "";
 
 // --- MANEJO DE LOGIN ---
@@ -277,7 +229,8 @@ btnLogin.onclick = () => {
     localStorage.setItem("utu_chat_user", user);
     loginScreen.style.display = "none";
   } else {
-    loginError.innerText = "WRONG PASSWORD"; loginError.style.display = "block";
+    loginError.innerText = "WRONG PASSWORD"; 
+    loginError.style.display = "block";
   }
 };
 
@@ -288,17 +241,15 @@ document.getElementById("btn-logout").onclick = () => {
 // --- FILTRADO ESTRICTO DE CARACTERES (SOLO EMOJIS) ---
 const inputTexto = document.getElementById("txt");
 
-// Función compleja para detectar emojis
 function containsOnlyEmojis(str) {
   const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
   const cleanStr = str.replace(emojiRegex, '');
-  return cleanStr.length === 0 || cleanStr.trim().length === 0; // Solo emojis o espacios
+  return cleanStr.length === 0 || cleanStr.trim().length === 0;
 }
 
-inputTexto.oninput = (e) => {
-  // Solo permitimos el valor si es puramente emojis
+inputTexto.oninput = () => {
   if (!containsOnlyEmojis(inputTexto.value) && inputTexto.value !== "") {
-    inputTexto.value = ""; // Borramos si escriben texto
+    inputTexto.value = "";
   }
 };
 
@@ -325,81 +276,12 @@ const liveEmoji = document.getElementById("live-emoji");
 const liveTime = document.getElementById("live-time");
 const historyBox = document.getElementById("history-box");
 
-onChildAdded(query(mensajesRef, limitToLast(50)), (snap) => {
-  const datos = snap.val();
- if (datos.remitente !== miUsuario && Notification.permission === "granted") {
-  new Notification(`${datos.remitente} 🥀`, {
-    body: "te ha enviado un mensaje",
-    icon: "https://cdn-icons-png.flaticon.com/512/1827/1827392.png"
-  });
-}
-  const horaStr = new Date(datos.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  // 1. Actualizar Pantalla Principal (overwrite previous)
-  liveSender.innerText = datos.remitente;
-  liveSender.className = `sender-tag sender-${datos.remitente.toLowerCase()}`;
-  liveEmoji.innerText = datos.contenido;
-  liveTime.innerText = horaStr;
-
-  // Definimos el color según quién escribe
-  let colorRemitente = '#00aaff'; // Azul para Sabri por defecto
-  if (datos.remitente === 'Cris') colorRemitente = '#00e676'; // Verde para Cris
-  if (datos.remitente === 'Ana') colorRemitente = '#ff007f';  // Fucsia para Ana
-
-  // 2. Agregar al historial (Sidebar)
-  const item = document.createElement("div");
-  item.className = "history-item";
-  item.innerHTML = `
-    <div class="history-meta">
-      <span style="color: ${colorRemitente}; font-weight:bold;">${datos.remitente}</span>
-      <span>${horaStr}</span>
-    </div>
-    <div style="font-size: 14px;">${datos.contenido}</div>
-  `;
-  historyBox.insertBefore(item, historyBox.firstChild); // Nuevo arriba
-});
-
-// --- LÓGICA DE SIDEBAR ---
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("sidebar-overlay");
-
-const openSidebar = () => { sidebar.classList.add("open"); overlay.style.display = "block"; };
-const closeSidebar = () => { sidebar.classList.remove("open"); overlay.style.display = "none"; };
-
-document.getElementById("btn-open-sidebar").onclick = openSidebar;
-document.getElementById("btn-close-sidebar").onclick = closeSidebar;
-overlay.onclick = closeSidebar;
-
-const popup = document.getElementById("notif-popup");
-const btnAllow = document.getElementById("allow-notif");
-const btnClose = document.getElementById("close-popup");
-
-// mostrar popup automáticamente (o cuando quieras)
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    popup.style.display = "flex";
-  }, 1000);
-});
-
-btnClose.onclick = () => {
-  popup.style.display = "none";
-};
-
-// --- LEER EN TIEMPO REAL ---
-const liveSender = document.getElementById("live-sender");
-const liveEmoji = document.getElementById("live-emoji");
-const liveTime = document.getElementById("live-time");
-const historyBox = document.getElementById("history-box");
-
-// TRUCO: Evitar spam de notificaciones al cargar el historial inicial
 let isInitialLoad = true;
 setTimeout(() => { isInitialLoad = false; }, 3000); 
 
 onChildAdded(query(mensajesRef, limitToLast(50)), (snap) => {
   const datos = snap.val();
   
-  // SOLUCIÓN AL BUG DE CELULAR: 
-  // En móviles no podemos usar 'new Notification', usamos el Service Worker.
   if (!isInitialLoad && datos.remitente !== miUsuario && Notification.permission === "granted") {
     try {
       if (navigator.serviceWorker) {
@@ -417,18 +299,15 @@ onChildAdded(query(mensajesRef, limitToLast(50)), (snap) => {
 
   const horaStr = new Date(datos.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  // 1. Actualizar Pantalla Principal
   liveSender.innerText = datos.remitente;
   liveSender.className = `sender-tag sender-${datos.remitente.toLowerCase()}`;
   liveEmoji.innerText = datos.contenido;
   liveTime.innerText = horaStr;
 
-  // Definimos el color según quién escribe
-  let colorRemitente = '#00aaff'; // Azul para Sabri por defecto
-  if (datos.remitente === 'Cris') colorRemitente = '#00e676'; // Verde para Cris
-  if (datos.remitente === 'Ana') colorRemitente = '#ff007f';  // Fucsia para Ana
+  let colorRemitente = '#00aaff';
+  if (datos.remitente === 'Cris') colorRemitente = '#00e676';
+  if (datos.remitente === 'Ana') colorRemitente = '#ff007f';
 
-  // 2. Agregar al historial (Sidebar)
   const item = document.createElement("div");
   item.className = "history-item";
   item.innerHTML = `
@@ -438,7 +317,7 @@ onChildAdded(query(mensajesRef, limitToLast(50)), (snap) => {
     </div>
     <div style="font-size: 14px;">${datos.contenido}</div>
   `;
-  historyBox.insertBefore(item, historyBox.firstChild); // Nuevo arriba
+  historyBox.insertBefore(item, historyBox.firstChild);
 });
 
 // --- LÓGICA DE SIDEBAR ---
@@ -458,21 +337,18 @@ const btnAllow = document.getElementById("allow-notif");
 const btnClose = document.getElementById("close-popup");
 
 window.addEventListener("load", () => {
-  // SOLUCIÓN POPUP: Si ya tiene permisos O si ya lo cerró antes (guardado en localStorage), no hacer nada.
   if (Notification.permission === "granted" || localStorage.getItem("notif_popup_seen")) {
     return;
   }
-  
   setTimeout(() => {
     popup.style.display = "flex";
   }, 1000);
 });
 
 btnClose.onclick = () => {
-  localStorage.setItem("notif_popup_seen", "true"); // Guardar en memoria que ya lo vio y lo cerró
+  localStorage.setItem("notif_popup_seen", "true");
   popup.style.display = "none";
 };
-
 
 // --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
 const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
@@ -486,7 +362,7 @@ function urlBase64ToUint8Array(base64) {
 
 btnAllow.onclick = async () => {
   popup.style.display = "none";
-  localStorage.setItem("notif_popup_seen", "true"); // Guardar en memoria que ya lo aceptó
+  localStorage.setItem("notif_popup_seen", "true");
 
   try {
     const perm = await Notification.requestPermission();
@@ -514,9 +390,6 @@ btnAllow.onclick = async () => {
     console.error("Error:", error);
   }
 };
-
-
 </script>
-
 </body>
 </html>
