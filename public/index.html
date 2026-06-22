@@ -363,7 +363,9 @@ btnClose.onclick = () => {
 };
 
 // --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
+// --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
 const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
+const btnSidebarNotif = document.getElementById("btn-sidebar-notif"); // <- Agregamos la referencia al botón de la sidebar
 
 function urlBase64ToUint8Array(base64) {
   const padding = '='.repeat((4 - base64.length % 4) % 4);
@@ -372,14 +374,15 @@ function urlBase64ToUint8Array(base64) {
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
-btnAllow.onclick = async () => {
+// Creamos una función única para activar las notificaciones
+async function activarNotificaciones() {
   popup.style.display = "none";
   localStorage.setItem("notif_popup_seen", "true");
 
   try {
     const perm = await Notification.requestPermission();
     if (perm !== "granted") {
-      console.log("Rechazó las notificaciones");
+      alert("❌ Permiso denegado. Actívalas manualmente desde los ajustes del navegador.");
       return;
     }
 
@@ -400,8 +403,14 @@ btnAllow.onclick = async () => {
     alert("LISTO 🔥 Notificaciones activadas.");
   } catch (error) {
     console.error("Error:", error);
+    alert("Hubo un fallo al intentar suscribirse.");
   }
-};
+}
+
+// Asignamos la función a ambos botones
+btnAllow.onclick = activarNotificaciones;
+btnSidebarNotif.onclick = activarNotificaciones; 
+
 </script>
 </body>
 </html>
