@@ -93,10 +93,11 @@
   .sender-sabri { background: #1c3d5a; color: #00aaff; }
 
   .emoji-display {
-    font-size: 70px;
+    font-size: 40px; /* Reducido un poco para que el texto largo no se desborde groseramente */
     text-align: center;
     filter: drop-shadow(0 4px 0px rgba(0,0,0,0.5));
     margin: 20px 0;
+    word-break: break-word;
   }
 
   .time-tag { position: absolute; bottom: 10px; right: 10px; font-size: 6px; color: #666; }
@@ -185,9 +186,6 @@
   <div class="history-list" id="history-box"></div>
 </div>
 
-
-  
-
 <header>
   <button class="menu-btn" id="btn-open-sidebar">☰</button>
   <div class="app-title">CODEBREAKER 8BIT</div>
@@ -251,24 +249,8 @@ document.getElementById("btn-logout").onclick = () => {
   if(confirm("LOGOUT?")) { localStorage.removeItem("utu_chat_user"); location.reload(); }
 };
 
-// --- FILTRADO ESTRICTO DE CARACTERES (SOLO EMOJIS) ---
-const inputTexto = document.getElementById("txt");
-
-// Función compleja para detectar emojis (¡AHORA MÁS COMPLEJA Y FUNCIONAL! 😎)
-function containsOnlyEmojis(str) {
-  // Añadimos \ufe0f (Selector de color/estilo) y \u200d (Pegamento de emojis)
-  const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]|\ufe0f|\u200d)/g;
-  
-  const cleanStr = str.replace(emojiRegex, '');
-  return cleanStr.length === 0 || cleanStr.trim().length === 0; // Solo emojis o espacios
-}
-
-
-inputTexto.oninput = () => {
-  if (!containsOnlyEmojis(inputTexto.value) && inputTexto.value !== "") {
-    inputTexto.value = "";
-  }
-};
+// --- ENTRADA DE TEXTO ---
+const inputTexto = document.getElementById("txt"); // Mantenemos la variable intacta
 
 // --- ENVIAR MENSAJE ---
 const enviarMensaje = () => {
@@ -368,9 +350,8 @@ btnClose.onclick = () => {
 };
 
 // --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
-// --- CONFIGURACIÓN DE NOTIFICACIONES PUSH ---
 const publicVapidKey = "BP7Qt_P-I1EyNpFAEe34LimEOZB1WkNWaTblQgBehyZid5kT99-DumiX6V3PwpxnVlk1WxNVCplgPUS--xLUz70";
-const btnSidebarNotif = document.getElementById("btn-sidebar-notif"); // <- Agregamos la referencia al botón de la sidebar
+const btnSidebarNotif = document.getElementById("btn-sidebar-notif");
 
 function urlBase64ToUint8Array(base64) {
   const padding = '='.repeat((4 - base64.length % 4) % 4);
@@ -379,7 +360,6 @@ function urlBase64ToUint8Array(base64) {
   return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
 }
 
-// Creamos una función única para activar las notificaciones
 async function activarNotificaciones() {
   popup.style.display = "none";
   localStorage.setItem("notif_popup_seen", "true");
@@ -412,7 +392,6 @@ async function activarNotificaciones() {
   }
 }
 
-// Asignamos la función a ambos botones
 btnAllow.onclick = activarNotificaciones;
 btnSidebarNotif.onclick = activarNotificaciones; 
 
